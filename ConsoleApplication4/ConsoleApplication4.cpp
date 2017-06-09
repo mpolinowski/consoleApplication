@@ -9,13 +9,19 @@ using namespace std;
 void PrintIntro();
 void PlayGame();
 string GetGuess();
+bool AskToPlayAgain();
 
 // entry point of application
 int main()
 {
-	PrintIntro();
+	bool bPlayAgain = false;
+	do
+	{
+		PrintIntro();
+		PlayGame();
+		bPlayAgain = AskToPlayAgain();
 
-	PlayGame();
+	} while (bPlayAgain);
 
 	return 0; // Exit Application
 }
@@ -31,16 +37,6 @@ void PrintIntro()
 	return;
 }
 
-// get a guess from player
-string GetGuess()
-{
-	cout << "Enter your guess: ";
-	string Guess = "";
-	getline(cin, Guess);
-
-	return Guess;
-}
-
 // Loop for the number of turns asking guesses
 void PlayGame()
 {
@@ -51,4 +47,24 @@ void PlayGame()
 		cout << "Your guess was: " << Guess << endl;
 		cout << endl;
 	}
+}
+
+// get a guess from player
+string GetGuess()
+{
+	cout << "Enter your guess: ";
+	string Guess = "";
+	getline(cin, Guess);
+
+	return Guess;
+}
+
+bool AskToPlayAgain()
+{
+	cout << "Want to play again? y/n\n";
+	string Response = "";
+	getline(cin, Response);
+	cout << endl;
+
+	return (Response[0] == 'y') || (Response[0] == 'Y');
 }
