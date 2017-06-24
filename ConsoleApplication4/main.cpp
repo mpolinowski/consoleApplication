@@ -11,7 +11,7 @@ std::string GetGuess();
 bool AskToPlayAgain();
 FBullCowGame BCGame; // Instantiate a new Game
 
-// entry point of application
+					 // entry point of application
 int main()
 {
 	bool bPlayAgain = false;
