@@ -10,7 +10,7 @@ public:
 	bool IsGameWon() const;
 
 	void Reset(); // TODO add return value
-	bool CheckGuessValidity(std::string);
+	bool CheckGuessValidity(std::string); //TODO provide method to count bulls&cows, and increasing turn number MyCurrentTry
 
 private:
 	// see FBullCowGame constructor for initialisation

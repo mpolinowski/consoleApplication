@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FBullCowGame.h"
 
-FBullCowGame::FBullCowGame() // constructor initialize state at BCGame start
+FBullCowGame::FBullCowGame() // constructor initialize state of BCGame on runtime start
 {
 	Reset();
 }
