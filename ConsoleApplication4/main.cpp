@@ -1,17 +1,32 @@
+/* This is the console executeable that makes use of the BullCow class
+This acts as the view in a MVC pattern and is responsible for all
+user interaction. For game logic see the FBullCowGame class.
+*/
+
 // Console Application Game - Training for Unreal Engine Coding Standards
+
+#pragma once
 
 #include "stdafx.h"
 #include <iostream>
 #include <string>
 #include "FBullCowGame.h"
 
+// make code Unreal coding standard complient
+using FText = std::string;
+using int32 = int;
+
+// function prototypes as outside a class
 void PrintIntro();
 void PlayGame();
-std::string GetGuess();
+FText GetValidGuess();
 bool AskToPlayAgain();
-FBullCowGame BCGame; // Instantiate a new Game
+void PrintGameSumary();
 
-					 // entry point of application
+// Instantiate a new Game
+FBullCowGame BCGame;
+
+// entry point of application
 int main()
 {
 	bool bPlayAgain = false;
@@ -29,50 +44,86 @@ int main()
 //  introduce the game
 void PrintIntro()
 {
-	constexpr int WORD_LENGTH = 9;
-	std::cout << "Welcome to Bulls and Cows\n";
-	std::cout << "Can you guess the " << WORD_LENGTH;
-	std::cout << " letter isogram I'am thinking of??\n";
+	std::cout << "\n\n Welcome to Bulls and Cows\n";
+	std::cout << " Can you guess the " << BCGame.GetHiddenWordLength();
+	std::cout << " letter lower case isogram I'am thinking of??\n";
 	std::cout << std::endl;
 	return;
 }
 
-// asking for guesses
+// Plays a game instance to completion
 void PlayGame()
 {
 	BCGame.Reset();
-	int MaxTries = BCGame.GetMaxTries();
+	int32 MaxTries = BCGame.GetMaxTries();
 
-	// loop for the number of turns asking guesses
-	// TODO change from FOR to WHILE loop once we use try validation
-	for (int i = 0; i < MaxTries; i++)
+	// loop asking guesses while the game is NOT won
+	// and there are still tries remaining
+	while (!BCGame.IsGameWon() && BCGame.GetCurrentTry() <= MaxTries)
 	{
-		std::string Guess = GetGuess(); // TODO make loop check validity
+		FText Guess = GetValidGuess();
 
-		// submit only valid guesses to the game
-		// print number of bulls and cows
-		std::cout << "Your guess was: " << Guess << std::endl;
-		std::cout << std::endl;
+		// submit only valid guesses to the game, and receive counts
+		FBullCowCount BullCowCount = BCGame.SubmitValidGuess(Guess);
+
+		std::cout << " Bulls = " << BullCowCount.Bulls;
+		std::cout << ". Cows = " << BullCowCount.Cows << "\n\n";
 	}
-	// TODO Summarize game
+	
+	PrintGameSumary();
+	return;
 }
 
-// get a guess from player
-std::string GetGuess()
+// loop continually until user gives valid guess
+FText GetValidGuess()
 {
-	int CurrentTry = BCGame.GetCurrentTry();
+	FText Guess = ""; // initialize guess variable
+	EGuessStatus Status = EGuessStatus::Invalid; // Default set validity to invalid
+	do
+	{
+		// get a guess from player
+		int32 CurrentTry = BCGame.GetCurrentTry();
+		int32 MaxTries = BCGame.GetMaxTries();
+		std::cout << " Try " << CurrentTry << " / " << MaxTries << ": Enter your guess: ";
+		std::getline(std::cin, Guess); // change value of Guess to user input
 
-	std::cout << "Try " << BCGame.GetCurrentTry() << ". Enter your guess: ";
-	std::string Guess = "";
-	std::getline(std::cin, Guess);
+		// check validity
+		Status = BCGame.CheckGuessValidity(Guess);
+		switch (Status)
+		{
+		case EGuessStatus::Wrong_Length:
+			std::cout << " Please only enter " << BCGame.GetHiddenWordLength() << " letter words.\n\n";
+			break;
+		case EGuessStatus::Not_Isogram:
+			std::cout << " Please only enter words without repeating letters.\n\n";
+			break;
+		case EGuessStatus::Not_Lowercase:
+			std::cout << " Please only use lower case character.\n\n";
+			break;
+		default:
+			// assume guess is valid if not caught by EGuessStatus exception
+			break;
+		}
+	} while (Status != EGuessStatus::OK); // keep looping until guess is valid
 
 	return Guess;
 }
 
+void PrintGameSumary()
+{
+	if (BCGame.IsGameWon())
+	{
+		std::cout << " Well done! You are a Princess!";
+	}
+	else {
+		std::cout << " Rotten Luck!";
+	}
+}
+
 bool AskToPlayAgain()
 {
-	std::cout << "Want to play again? y/n \n";
-	std::string Response = "";
+	std::cout << " Want to try again? y/n \n";
+	FText Response = "";
 	std::getline(std::cin, Response);
 	std::cout << std::endl;
 

@@ -1,19 +1,48 @@
 #pragma once
 #include <string>
 
-class FBullCowGame {
+// make code Unreal coding standard complient
+using FString = std::string;
+using int32 = int;
+
+//All values initialized to Zero
+struct FBullCowCount
+{
+	int32 Bulls = 0;
+	int32 Cows =  0;
+};
+
+enum class EGuessStatus
+{
+	Invalid,
+	OK,
+	Not_Isogram,
+	Wrong_Length,
+	Not_Lowercase
+};
+
+class FBullCowGame
+{
 public:
 	FBullCowGame(); // constructor initialize state at BCGame start
 
-	int GetMaxTries() const;
-	int GetCurrentTry() const;
-	bool IsGameWon() const;
+	int32 GetMaxTries() const;
+	int32 GetCurrentTry() const;
+	int32 GetHiddenWordLength() const;
 
-	void Reset(); // TODO add return value
-	bool CheckGuessValidity(std::string); //TODO provide method to count bulls&cows, and increasing turn number MyCurrentTry
+	bool IsGameWon() const;
+	EGuessStatus CheckGuessValidity(FString) const;
+
+	void Reset();
+	// counts bulls&cows, and increasing try number MyCurrentTry - assuming valid guess
+	FBullCowCount SubmitValidGuess(FString);
 
 private:
 	// see FBullCowGame constructor for initialisation
-	int MyCurrentTry;
-	int MyMaxTries;
+	int32 MyCurrentTry;
+	FString MyHiddenWord;
+	bool bGameIsWon;
+
+	bool IsIsogram(FString) const;
+	bool IsLowerCase(FString) const;
 };
